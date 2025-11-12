@@ -1,329 +1,228 @@
-# Sistema de Gestão para Salão de Beleza - Só elas Studio
+# Elite Barber Studio - Hair Salon Management System
 
-## APK ANDROID DISPONIVEL PARA DOWNLOAD DENTRO DA PASTA "APP ANDROID"
+Modern, full-stack web application for managing a professional barber shop with booking system, admin panel, and customer-facing website.
 
-## 📋 Resumo Executivo
+## 🚀 Features
 
-Este projeto consiste no desenvolvimento de um sistema completo de gestão para salão de beleza, incluindo aplicação web responsiva e aplicativo mobile Android via WebView. O sistema permite gerenciar agendamentos, funcionárias, serviços, produtos e relatórios financeiros.
+### Customer Features
+- **Modern Landing Page** - Elegant hero section with smooth animations
+- **Service Showcase** - Display of all available services with pricing
+- **Team Presentation** - Meet the barbers with photos and bios
+- **Online Booking System** - Real-time availability checking and booking
+- **Custom Date/Time Picker** - Stylish, user-friendly booking interface
+- **Reviews Carousel** - Animated customer testimonials
+- **Contact Information** - Dynamic contact details and business hours
 
-## 🎯 Objetivos
+### Admin Features
+- **Secure Authentication** - JWT-based login system with bcrypt password hashing
+- **Dashboard** - Real-time statistics and quick actions
+- **Booking Management** - View, edit, and manage all reservations
+- **Barber Management** - Add, edit, and remove team members
+- **Availability Control** - Block specific dates/times for each barber
+- **Rate Limiting** - Protection against brute force attacks
 
-### Objetivo Geral
-Desenvolver um sistema integrado de gestão para salões de beleza que otimize o controle de agendamentos, estoque e relatórios financeiros.
+### Security Features
+- ✅ Password hashing with bcrypt
+- ✅ JWT token authentication
+- ✅ Input validation with Zod
+- ✅ Rate limiting on sensitive endpoints
+- ✅ SQL injection prevention (MongoDB)
+- ✅ XSS protection
+- ✅ Environment variable validation
+- ✅ Secure session management
 
-### Objetivos Específicos
-- Criar interface web responsiva para gestão completa do salão
-- Implementar sistema de agendamentos com calendário interativo
-- Desenvolver controle de estoque de produtos
-- Gerar relatórios financeiros e de performance
-- Criar aplicativo mobile Android para acesso móvel
-- Implementar armazenamento em nuvem para sincronização de dados
+## 🛠️ Tech Stack
 
-## 🛠️ Tecnologias Utilizadas
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Styling**: Tailwind CSS v4, Framer Motion
+- **UI Components**: shadcn/ui
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB with native driver
+- **Authentication**: JWT with jose, bcrypt
+- **Validation**: Zod
+- **Security**: Rate limiting, input sanitization
 
-### Frontend Web
-- **Next.js 14.2.5** - Framework React para aplicações web
-- **React 18.3.1** - Biblioteca para interfaces de usuário
-- **TypeScript 5.4.0** - Linguagem tipada baseada em JavaScript
-- **Tailwind CSS 3.4.4** - Framework CSS utilitário
-- **Shadcn/UI** - Componentes de interface baseados em Radix UI
+## 📦 Installation
 
-### Backend e Banco de Dados
-- **Supabase** - Backend as a Service (BaaS)
-- **PostgreSQL** - Banco de dados relacional
-- **Row Level Security (RLS)** - Segurança a nível de linha
+1. **Clone the repository**
+\`\`\`bash
+git clone <repository-url>
+cd barber-shop
+\`\`\`
 
-### Mobile
-- **Android WebView** - Aplicativo nativo Android 
-- **Java** - Linguagem de programação Android
+2. **Install dependencies**
+\`\`\`bash
+npm install
+\`\`\`
 
-### Infraestrutura
-- **Vercel** - Plataforma de deploy e hospedagem
-- **GitHub** - Controle de versão
+3. **Set up environment variables**
 
-## 🏗️ Arquitetura do Sistema
+Create a `.env.local` file in the root directory:
 
-### Arquitetura Geral
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend Web  │    │  Mobile Android │    │    Supabase     │
-│   (Next.js)     │◄──►│   (WebView)     │◄──►│   (Backend)     │
-│                 │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-                    ┌─────────────────┐
-                    │     Vercel      │
-                    │   (Hosting)     │
-                    └─────────────────┘
-```
+\`\`\`env
+# MongoDB Connection
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/barber_shop?retryWrites=true&w=majority
 
-### Banco de Dados
-```sql
--- Estrutura das principais tabelas
+# JWT Secret (minimum 32 characters)
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-min-32-chars
 
--- Funcionárias
-funcionarias (
-  id UUID PRIMARY KEY,
-  nome TEXT NOT NULL,
-  cargo TEXT NOT NULL,
-  is_dona BOOLEAN DEFAULT false,
-  created_at TIMESTAMP
-)
+# Contact Information (displayed in footer)
+NEXT_PUBLIC_CONTACT_ADDRESS=ul. Przykładowa 123, 00-001 Warszawa
+NEXT_PUBLIC_CONTACT_PHONE=+48 123 456 789
+NEXT_PUBLIC_CONTACT_EMAIL=kontakt@elitebarber.pl
 
--- Serviços
-servicos (
-  id UUID PRIMARY KEY,
-  nome TEXT NOT NULL,
-  preco_base NUMERIC NOT NULL,
-  duracao_minutos INTEGER NOT NULL,
-  cor_padrao TEXT NOT NULL,
-  created_at TIMESTAMP
-)
+# Business Hours
+NEXT_PUBLIC_HOURS_WEEKDAY=9:00 - 20:00
+NEXT_PUBLIC_HOURS_SATURDAY=10:00 - 18:00
+NEXT_PUBLIC_HOURS_SUNDAY=Nieczynne
+\`\`\`
 
--- Agendamentos
-agendamentos (
-  id UUID PRIMARY KEY,
-  cliente_nome TEXT NOT NULL,
-  cliente_whatsapp TEXT NOT NULL,
-  funcionaria_id UUID REFERENCES funcionarias(id),
-  servico_id UUID REFERENCES servicos(id),
-  preco NUMERIC NOT NULL,
-  duracao_minutos INTEGER NOT NULL,
-  data_hora TIMESTAMP NOT NULL,
-  cor TEXT NOT NULL,
-  observacoes TEXT,
-  status TEXT DEFAULT 'agendado',
-  created_at TIMESTAMP
-)
+4. **Initialize the database**
 
--- Produtos
-produtos (
-  id UUID PRIMARY KEY,
-  nome TEXT NOT NULL,
-  marca TEXT NOT NULL,
-  quantidade_atual INTEGER DEFAULT 0,
-  unidade TEXT NOT NULL,
-  estoque_minimo INTEGER DEFAULT 0,
-  custo_unitario NUMERIC NOT NULL,
-  created_at TIMESTAMP
-)
+Run the initialization script to create collections and seed data:
 
--- Registros de Compra
-registros_compra (
-  id UUID PRIMARY KEY,
-  produto_id UUID REFERENCES produtos(id),
-  quantidade INTEGER NOT NULL,
-  custo_unitario NUMERIC NOT NULL,
-  valor_total NUMERIC NOT NULL,
-  data_compra TIMESTAMP NOT NULL,
-  created_at TIMESTAMP
-)
-```
+\`\`\`bash
+npm run init-db
+\`\`\`
 
-## 🔧 Funcionalidades Implementadas
+This will:
+- Create MongoDB collections with validation schemas
+- Set up indexes for optimal performance
+- Create an admin user (username: `admin`, password: `admin123`)
+- Add sample barbers to the database
 
-### 1. Dashboard Principal
-- Visão geral de agendamentos do dia
-- Métricas de faturamento
-- Alertas de estoque baixo
-- Gráficos de performance
+5. **Run the development server**
+\`\`\`bash
+npm run dev
+\`\`\`
 
-### 2. Sistema de Agendamentos
-- Calendário interativo mensal
-- Criação, edição e exclusão de agendamentos
-- Visualização por funcionária
-- Status de agendamentos (agendado, concluído, cancelado)
-- Cálculo automático de preços e duração
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-### 3. Gestão de Funcionárias
-- Cadastro de funcionárias
-- Definição de cargos
-- Identificação da proprietária
-- Vinculação com agendamentos
+## 🔐 Default Credentials
 
-### 4. Catálogo de Serviços
-- Cadastro de serviços oferecidos
-- Definição de preços base
-- Duração estimada
-- Cores para identificação visual
+After running the initialization script:
 
-### 5. Controle de Estoque
-- Cadastro de produtos
-- Controle de quantidade atual
-- Alertas de estoque mínimo
-- Registro de compras
-- Cálculo de custos
+- **Admin Panel**: `/admin/login`
+- **Username**: `admin`
+- **Password**: `admin123`
 
-### 6. Relatórios Financeiros
-- Faturamento por período
-- Análise de serviços mais rentáveis
-- Custos de produtos
-- Exportação para PDF e Excel
+⚠️ **Important**: Change the default password immediately in production!
 
-### 7. Aplicativo Mobile
-- Interface nativa Android
-- Acesso completo via WebView
-- Funcionamento offline limitado
-- Sincronização automática
+## 📁 Project Structure
 
-## 📱 Desenvolvimento Mobile
+\`\`\`
+├── app/
+│   ├── admin/              # Admin panel pages
+│   │   ├── dashboard/      # Admin dashboard
+│   │   ├── bookings/       # Booking management
+│   │   ├── barbers/        # Barber management
+│   │   └── login/          # Admin login
+│   ├── api/                # API routes
+│   │   ├── auth/           # Authentication endpoints
+│   │   ├── barbers/        # Barber CRUD operations
+│   │   ├── bookings/       # Booking CRUD operations
+│   │   └── stats/          # Dashboard statistics
+│   ├── layout.tsx          # Root layout
+│   ├── page.tsx            # Landing page
+│   └── globals.css         # Global styles
+├── components/
+│   ├── ui/                 # shadcn/ui components
+│   ├── hero-section.tsx    # Hero section
+│   ├── about-section.tsx   # About section
+│   ├── services-section.tsx # Services showcase
+│   ├── barbers-section.tsx # Team presentation
+│   ├── booking-section.tsx # Booking form
+│   ├── reviews-section.tsx # Customer reviews
+│   ├── footer.tsx          # Footer with contact info
+│   ├── custom-date-picker.tsx # Custom date picker
+│   └── custom-time-picker.tsx # Custom time picker
+├── lib/
+│   ├── mongodb.ts          # MongoDB connection
+│   ├── db.ts               # Database operations
+│   ├── auth.ts             # Authentication utilities
+│   ├── validation.ts       # Input validation schemas
+│   └── rate-limit.ts       # Rate limiting middleware
+├── scripts/
+│   └── init-mongodb.ts     # Database initialization
+└── middleware.ts           # Next.js middleware for auth
+\`\`\`
 
-### Estratégia Escolhida: WebView
-A escolha do WebView Android foi baseada em:
+## 🎨 Customization
 
-**Vantagens:**
-- Desenvolvimento mais rápido
-- Manutenção unificada do código
-- Atualizações automáticas
-- Menor complexidade técnica
-- Aproveitamento total da aplicação web
+### Contact Information
 
-**Implementação:**
-- WebView otimizado para performance
-- Suporte completo a JavaScript
-- Armazenamento local habilitado
-- Tratamento de erros de conexão
-- Interface de loading personalizada
+Update the environment variables in `.env.local` to change:
+- Business address
+- Phone number
+- Email address
+- Opening hours
 
-### Configurações Principais
-```java
-// Principais configurações do WebView
-webSettings.setJavaScriptEnabled(true);
-webSettings.setDomStorageEnabled(true);
-webSettings.setDatabaseEnabled(true);
-webSettings.setAppCacheEnabled(true);
-webSettings.setUseWideViewPort(true);
-webSettings.setLoadWithOverviewMode(true);
-```
+### Barber Information
 
-## 🔒 Segurança e Privacidade
+Barbers can be managed through the admin panel at `/admin/barbers`:
+- Add new team members
+- Update photos, bios, and specialties
+- Set experience years
+- Remove barbers
 
-### Autenticação
-- Sistema de autenticação via Supabase
-- Tokens JWT para sessões
-- Logout automático por inatividade
+### Services and Pricing
 
-### Proteção de Dados
-- Row Level Security (RLS) no banco
-- Criptografia de dados em trânsito
-- Backup automático na nuvem
-- Conformidade com LGPD
+Edit `components/services-section.tsx` to modify:
+- Service names
+- Descriptions
+- Pricing
 
-### Políticas RLS Implementadas
-```sql
--- Exemplo de política RLS
-CREATE POLICY "Agendamentos são visíveis para todos" 
-ON agendamentos FOR SELECT USING (true);
+### Design and Colors
 
-CREATE POLICY "Permitir inserção de agendamentos" 
-ON agendamentos FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-```
+The color scheme is defined in `app/globals.css` using CSS variables:
+- `--background` - Main background color
+- `--foreground` - Main text color
+- `--accent` - Accent color (gold/beige)
+- `--primary` - Primary color (dark)
+- `--secondary` - Secondary background
 
-## 📊 Resultados e Métricas
+## 🔒 Security Best Practices
 
-### Performance
-- Tempo de carregamento: < 3 segundos
-- Responsividade: 100% mobile-friendly
-- Disponibilidade: 99.9% (Vercel)
-- Sincronização: Tempo real
+1. **Change default credentials** immediately after setup
+2. **Use strong JWT secret** (minimum 32 characters)
+3. **Enable HTTPS** in production
+4. **Set secure cookie flags** in production
+5. **Regularly update dependencies**
+6. **Monitor rate limit logs** for suspicious activity
+7. **Backup database** regularly
 
-### Usabilidade
-- Interface intuitiva e moderna
-- Navegação simplificada
-- Feedback visual imediato
-- Compatibilidade cross-browser
+## 📱 Responsive Design
 
-### Escalabilidade
-- Arquitetura preparada para crescimento
-- Banco de dados otimizado
-- CDN global (Vercel)
-- Backup automático
+The application is fully responsive and optimized for:
+- Desktop (1920px+)
+- Laptop (1024px - 1919px)
+- Tablet (768px - 1023px)
+- Mobile (320px - 767px)
 
-## 🚀 Deploy e Infraestrutura
+## 🚀 Deployment
 
-### Processo de Deploy
-1. **Desenvolvimento Local**
-   - Hot reload automático
-   - Debugging integrado
+### Vercel (Recommended)
 
-2. **Controle de Versão**
-   - GitHub para versionamento
-   - Branches para features
-   - Pull requests para revisão
+1. Push your code to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy
 
-3. **Deploy Automático**
-   - Integração Vercel + GitHub
-   - Deploy automático em commits
-   - Preview de branches
+### Other Platforms
 
-4. **Monitoramento**
-   - Logs em tempo real
-   - Métricas de performance
-   - Alertas de erro
+Ensure your platform supports:
+- Node.js 18+
+- Next.js 16
+- MongoDB connection
 
-### URLs do Projeto
-- **Aplicação Web:** https://salao-app-iota.vercel.app
-- **Repositório:** https://github.com/swapnes/salao-app
-- **Banco de Dados:** Supabase Cloud
+## 📄 License
 
-## 🧪 Testes e Validação
+This project is private and proprietary.
 
-### Testes Realizados
-- Testes de funcionalidade em diferentes browsers
-- Testes de responsividade em dispositivos móveis
-- Testes de performance e carregamento
-- Validação com usuários finais
+## 🤝 Support
 
-### Dispositivos Testados
-- Desktop: Chrome, Firefox, Safari, Edge
-- Mobile: Android
-- Diferentes resoluções de tela
-
-## 📈 Conclusões e Trabalhos Futuros
-
-### Objetivos Alcançados
-✅ Sistema completo de gestão implementado
-✅ Interface web responsiva e moderna
-✅ Aplicativo mobile funcional
-✅ Armazenamento em nuvem configurado
-✅ Relatórios financeiros
-✅ Deploy em produção realizado
-
-### Melhorias Futuras
-- Notificações push no mobile
-- Integração com WhatsApp Business
-- Sistema para clientes
-- Módulo de marketing digital
-- Integração com sistemas de pagamento
-
-### Impacto do Projeto
-O sistema desenvolvido oferece uma solução completa e moderna para gestão de salões de beleza, proporcionando:
-- Maior organização dos agendamentos
-- Controle eficiente do estoque
-- Relatórios precisos para tomada de decisão
-- Acesso móvel para flexibilidade
-- Redução de custos operacionais
-- Melhoria na experiência do cliente
-
-## 📚 Referências Técnicas
-
-### Documentações Utilizadas
-- [Next.js Documentation](https://nextjs.org/docs)
-- [React Documentation](https://react.dev)
-- [Supabase Documentation](https://supabase.com/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Android WebView Guide](https://developer.android.com/guide/webapps/webview)
-
-### Ferramentas de Desenvolvimento
-- **VS Code** - Editor de código
-- **GitHub Desktop** - Controle de versão visual
-- **Android Studio** - Desenvolvimento Android
-- **Figma** - Design de interfaces
+For issues or questions, please contact the development team.
 
 ---
 
-**Desenvolvido por:** Gabriel Capistrano
-**Data:** Setembro 2025
-**Versão:** 1.0
+Built with ❤️ using Next.js, MongoDB, and modern web technologies.

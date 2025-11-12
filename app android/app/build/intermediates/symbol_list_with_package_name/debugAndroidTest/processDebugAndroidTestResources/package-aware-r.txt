@@ -1,3 +1,0 @@
-com.seuapp.soelasstudio.test
-style WhiteBackgroundDialogTheme
-style WhiteBackgroundTheme
